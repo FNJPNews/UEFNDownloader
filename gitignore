@@ -1,0 +1,36 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Local auth / tokens
+data/
+deviceAuth.json
+device_auth.json
+epic_auth_sessions.json
+*.token
+
+# Tool output
+downloads/
+*.pak
+*.ucas
+*.utoc
+*.sig
+*.manifest
+*.chunk
+
+# Diagnostics that may contain private IDs, URLs, tokens, or keys
+module_key_v4.json
+content_v2_cooked_content_package.json
+content_v4_client.json
+cooked_content_package.json
+content_service_probe.json
+artifact_candidates.json
+log_cooked_url_candidates.json
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
