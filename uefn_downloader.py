@@ -963,33 +963,29 @@ def safe_filename(value: str, fallback: str = "download") -> str:
     return cleaned or fallback
 
 
-def latest_fortnite_user_agent(log_dir: Path | None = None) -> str:
-    if log_dir is None:
-        log_dir = default_fortnite_log_dir()
-    if log_dir is None or not log_dir.exists():
-        return DEFAULT_FORTNITE_USER_AGENT
+def _fetch_fortnite_build_from_launcher(token: str | None = None) -> str | None:
+    url = (
+        "https://launcher-public-service-prod06.ol.epicgames.com"
+        "/launcher/api/public/assets/Windows"
+        "/4fe75bbc5a674f4f9b356b5c90567da5/Fortnite?label=Live"
+    )
+    try:
+        data = request_json(url, token=token, timeout=10)
+        build = data.get("buildVersion", "")
+        if isinstance(build, str) and build.startswith("++Fortnite+"):
+            return build
+    except Exception:
+        pass
+    return None
 
-    logs = sorted(log_dir.glob("FortniteGame*.log"), key=lambda path: path.stat().st_mtime, reverse=True)
-    build: str | None = None
-    os_name: str | None = None
-    for log_path in logs[:4]:
-        try:
-            text = log_path.read_text(encoding="utf-8", errors="replace")
-        except OSError:
-            continue
-        if build is None:
-            match = re.search(r"LogInit: Build:\s*(\+\+Fortnite\+Release-[\d.]+-CL-\d+)", text)
-            if match:
-                build = match.group(1)
-        if os_name is None:
-            match = re.search(r"EOSSDK Platform Properties \[OS=([^,\]]+)", text)
-            if match:
-                os_name = match.group(1)
-        if build and os_name:
-            return f"Fortnite/{build} {os_name}"
 
-    if build:
-        return f"Fortnite/{build} Windows/10.0.26100.8162.64bit"
+def latest_fortnite_user_agent(
+    log_dir: Path | None = None,
+    token: str | None = None,
+) -> str:
+    api_build = _fetch_fortnite_build_from_launcher(token=token)
+    if api_build:
+        return f"Fortnite/{api_build} Windows/10.0.26100.8162.64bit"
     return DEFAULT_FORTNITE_USER_AGENT
 
 
@@ -1640,9 +1636,9 @@ def cmd_download(args: argparse.Namespace) -> int:
                 print(f"warning: AES key lookup failed: {error}")
 
     user_agent = args.fortnite_user_agent or latest_fortnite_user_agent(
-        Path(args.fortnite_log_dir) if args.fortnite_log_dir else None
+        token=token,
     )
-    link_version = mnemonic.get("version")
+    
     package = resolve_cooked_content_package(
         map_code,
         token,
@@ -1650,7 +1646,7 @@ def cmd_download(args: argparse.Namespace) -> int:
         platform_name=args.content_platform,
         role=args.content_role,
         user_agent=user_agent,
-        version=link_version,
+        version=None,
         timeout=args.timeout,
     )
     binaries = package.get("binaries") if isinstance(package.get("binaries"), dict) else {}
