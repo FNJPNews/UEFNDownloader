@@ -1000,8 +1000,8 @@ def content_v4_package_url(
     if version is not None:
         query["version"] = str(version)
     return (
-        f"{CONTENT_SERVICE_BASE}/api/content/v4/link/{quote(map_code, safe='')}/"
-        f"cooked-content-package?{urlencode(query)}"
+        f"{CONTENT_SERVICE_BASE}/api/content/v4/cooked-content-package/link/{quote(map_code, safe='')}/"
+        f"?{urlencode(query)}"
     )
 
 
@@ -1768,7 +1768,7 @@ def resolve_v2_cooked_content_package(
     timeout: float,
 ) -> dict[str, Any]:
     url = (
-        f"{CONTENT_SERVICE_BASE}/api/content/v2/link/{quote(map_code, safe='')}/cooked-content-package?"
+        f"{CONTENT_SERVICE_BASE}/api/content/v4/cooked-content-package/link/{quote(map_code, safe='')}?"
         + urlencode(
             {
                 "role": role,
