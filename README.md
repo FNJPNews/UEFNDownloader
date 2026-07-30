@@ -180,3 +180,22 @@ content_v4_client.json
 
 `token` / `deviceId` / `secret` / `refresh_token` / `access_token` / AES key が含まれるファイルは、漏洩すると Epic アカウントやコンテンツへの不正アクセスにつながる可能性があります。
 
+## 謝辞・参考プロジェクト
+
+本プロジェクトのEpic Games device-code認証、device authの作成・利用、
+およびUEFN Content ServiceからAESキーを取得する仕組みの実装にあたり、
+Krowe-moh氏の
+[UEFN-AES-grabber](https://github.com/Krowe-moh/UEFN-AES-grabber)
+を参考にしています。
+
+参考元の処理をPython向けに再実装し、認証セッション管理、
+Content Serviceの調査、manifestおよびBuildPatchServicesの解析などを
+追加・変更しています。
+
+UEFN-AES-grabberは
+[Creative Commons Attribution-NonCommercial 4.0 International License](https://creativecommons.org/licenses/by-nc/4.0/)
+で提供されています。
+
+本プロジェクトはKrowe-moh氏、Epic Games、FortniteおよびUEFNとは
+提携・承認関係にありません。
+
